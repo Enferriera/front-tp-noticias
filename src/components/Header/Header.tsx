@@ -1,9 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
+type HeaderProps={
+  denominacion:string,
+  telefono:string,
+  horaDeAtencion:string,
+
+}
 
 
-
-const Header = () => {
+const Header = ({denominacion,telefono,horaDeAtencion}:HeaderProps) => {
   const navigate=useNavigate();
     return (
        
@@ -11,15 +16,15 @@ const Header = () => {
         <div className="container top-sect">
           <div className="navbar-header">
             <h1 className="navbar-brand w-25">
-              <a data-type='rd-navbar-brand text-wrap'  onClick={()=>navigate("/")}><small>Denominación Empresa</small></a>
+              <a data-type='rd-navbar-brand text-wrap'  onClick={()=>navigate("/")}><small>{denominacion}</small></a>
             </h1>
             <a className="search-form_toggle" href="#"></a>
           </div>
   
           <div className="help-box text-right">
             <p>Telefono</p>
-            <a href="callto:#">800-2345-6789</a>
-            <small><span>Horario:</span>  6am-4pm PST M-Th; &nbsp;6am-3pm PST Fri</small>
+            <a href="callto:#">{telefono}</a>
+            <small><span>Horario:</span>{horaDeAtencion}</small>
           </div>
         </div>
        
@@ -37,7 +42,7 @@ const Header = () => {
                     </ul>                           
                   </div>
               </nav>
-              <form className="search-form" action="buscador.html" method="GET" accept-charset="utf-8">
+              <form className="search-form" action="buscador.html" method="GET" >
                 <label className="search-form_label">
                   <input className="search-form_input" type="text" name="buscar"  placeholder="Ingrese Texto"/>
                   <span className="search-form_liveout"></span>

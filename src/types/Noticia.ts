@@ -5,6 +5,6 @@ resumenNoticia:string;
 imagenNoticia:string;
 contenidoHTML:string 
 publicada:string;
-fechaPublicacion:Date; 
+fechaPublicacion:string; 
 
 }

@@ -12,7 +12,7 @@ import Tiny from "../pages/Tiny";
     
     <Routes>
         <Route path="/" element={<IndexPage/>}/>
-        <Route path="/home" element={<Home/>}/>
+        <Route path="/home/:id" element={<Home/>}/>
         <Route path="/detalle" element={<Detalle/>}/>
         <Route path="/buscador" element={<Buscador/>}/>
         <Route path="/tiny" element={<Tiny/>}/>
