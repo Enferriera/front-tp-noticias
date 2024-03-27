@@ -5,6 +5,7 @@ import { Noticia } from "../types/Noticia";
 import { useParams, useNavigate} from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import { Carousel } from "react-bootstrap";
 
 const Home=()=> {
   const navigate=useNavigate();
@@ -29,7 +30,7 @@ useEffect(()=>{
         id: 1,
         tituloNoticia: "Innovación en IA",
         resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
-        imagenNoticia: "ia_innovacion.jpg",
+        imagenNoticia: "/src/assets/image/page-1_slide2.jpg",
         contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
         publicada: "Sí",
         fechaPublicacion: "2024-03-16"
@@ -38,7 +39,7 @@ useEffect(()=>{
         id: 2,
         tituloNoticia: "Expansión Global",
         resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
-        imagenNoticia: "expansion_global.jpg",
+        imagenNoticia: "/src/assets/image/page-1_slide1.jpg",
         contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
         publicada: "Sí",
         fechaPublicacion: "2024-03-17"
@@ -61,30 +62,24 @@ useEffect(()=>{
 <main>        
 
 <section className="well well1 well1_ins1">
-  <div className="camera_container">
-  <div id="camera" className="camera_wrap">
-    {empresa.listaNoticias.map((noticia:Noticia)=>(
-      
-      <div key={noticia.id} data-src={noticia.imagenNoticia}>
-        <div className="camera_caption fadeIn">
-          <div className="jumbotron jumbotron1">
-            <em>
-              <a onClick={()=>navigate(`/detalle/${noticia.id}`)}>{noticia.tituloNoticia}</a>
-            </em>
-            <div className="wrap">
-              <p>
-               {noticia.resumenNoticia}
-              </p>
-              <a onClick={()=>navigate(`/detalle/${noticia.id}`)} className="btn-link fa-angle-right"></a>
-            </div>  
-          </div>
-        </div>
-      </div>
-      
- ) )}
-    
+<Carousel>
+{empresa.listaNoticias.map((noticia:Noticia)=>(
+      <Carousel.Item key={noticia.id}>
+    <div className="w-100 bg-dark h-100">
+     
+      <img src={noticia.imagenNoticia}/>
     </div>
-  </div>
+      
+        <Carousel.Caption onClick={()=>navigate(`/detalle/${noticia.id}`)} className="d-flex justify-content-center" >
+          <div className="bg-primary w-50">
+          <a className="text-black fw-b" onClick={()=>navigate(`/detalle/${noticia.id}`)}>{noticia.tituloNoticia}</a>
+          <p className="text-black fw-b">{noticia.resumenNoticia}</p>
+          </div>
+       
+        </Carousel.Caption>
+      </Carousel.Item>
+       ) )}
+      </Carousel> 
 
 </section>
 
