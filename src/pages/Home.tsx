@@ -1,59 +1,88 @@
 
-
+import { useEffect, useState } from "react";
+import { Empresa } from "../types/Empresa";
+import { Noticia } from "../types/Noticia";
+import { useParams, useNavigate} from "react-router-dom";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
 
 const Home=()=> {
+  const navigate=useNavigate();
+  const {id}=useParams();
+const [empresa,setEmpresa]=useState<Empresa>();
+const [isloading,setIsloading]=useState(true);
+
+useEffect(()=>{
+
+  const empresaMano:Empresa={
+    id: 1,
+    denominacion: "Tecnologías Innovar",
+    telefono: "+54 11 2345-6789",
+    horarioDeAtencion: "Lunes a Viernes de 8 a 17 hs",
+    quienesSomos: "Somos líderes en soluciones tecnológicas innovadoras.",
+    latitud: -34.603722,
+    longitud: -58.381592,
+    domicilio: "Av. Siempre Viva 742, Buenos Aires",
+    email: "info@innovartech.com",
+    listaNoticias: [
+      {
+        id: 1,
+        tituloNoticia: "Innovación en IA",
+        resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
+        imagenNoticia: "ia_innovacion.jpg",
+        contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
+        publicada: "Sí",
+        fechaPublicacion: "2024-03-16"
+      },
+      {
+        id: 2,
+        tituloNoticia: "Expansión Global",
+        resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
+        imagenNoticia: "expansion_global.jpg",
+        contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
+        publicada: "Sí",
+        fechaPublicacion: "2024-03-17"
+      }
+     
+    ]
+  }
+    console.log(empresaMano);
+
+    setEmpresa(empresaMano);
+    setIsloading(false);
+  
+
+},[])
   return (
 <>
+{!isloading&&empresa?(
+  <>
+   <Header denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
 <main>        
 
 <section className="well well1 well1_ins1">
   <div className="camera_container">
-    <div id="camera" className="camera_wrap">
-      <div data-src="images/page-1_slide1.jpg">
+  <div id="camera" className="camera_wrap">
+    {empresa.listaNoticias.map((noticia:Noticia)=>(
+      
+      <div key={noticia.id} data-src={noticia.imagenNoticia}>
         <div className="camera_caption fadeIn">
           <div className="jumbotron jumbotron1">
             <em>
-              <a href="detalle.html">Titulo Noticia</a>
+              <a onClick={()=>navigate(`/detalle/${noticia.id}`)}>{noticia.tituloNoticia}</a>
             </em>
             <div className="wrap">
               <p>
-                Resumen
+               {noticia.resumenNoticia}
               </p>
-              <a href="detalle.html" className="btn-link fa-angle-right"></a>
+              <a onClick={()=>navigate(`/detalle/${noticia.id}`)} className="btn-link fa-angle-right"></a>
             </div>  
           </div>
         </div>
       </div>
-      <div data-src="images/page-1_slide2.jpg">
-        <div className="camera_caption fadeIn">
-          <div className="jumbotron jumbotron2">
-            <em>
-              Titulo Noticia
-            </em>
-            <div className="wrap">
-              <p>
-                Resumen
-              </p>
-              <a href="#" className="btn-link hov_prime fa-angle-right"></a>
-            </div>  
-          </div>
-        </div>
-      </div>
-      <div data-src="images/page-1_slide3.jpg">
-        <div className="camera_caption fadeIn">
-          <div className="jumbotron">
-            <em>
-              Titulo Noticia
-            </em>
-            <div className="wrap">
-              <p>
-                Resumen
-              </p>
-              <a href="#" className="btn-link fa-angle-right"></a>
-            </div>  
-          </div>
-        </div>
-      </div>
+      
+ ) )}
+    
     </div>
   </div>
 
@@ -67,15 +96,17 @@ const Home=()=> {
     <div className="row">
       <div className="col">
         <p style={{textAlign:"justify"}}>
-          Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </p>
+         {empresa.quienesSomos}
+          </p>
       </div>
     </div>
   </div>
 </section>
 
 </main>
-
+<Footer/>
+</>
+):(<></>)}
     </>
   )
 }
