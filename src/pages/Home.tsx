@@ -104,7 +104,7 @@ useEffect(()=>{
 </section>
 
 </main>
-<Footer/>
+<Footer denominacion={empresa.denominacion} latitud={empresa.latitud} longitud={empresa.longitud} />
 </>
 ):(<></>)}
     </>
