@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import { Empresa } from '../types/Empresa';
 import { EmpresaService } from '../utils/EmpresaService';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader/Loader';
 
  const IndexPage= ()=> {
 
@@ -36,7 +37,7 @@ import { useNavigate } from 'react-router-dom';
       </tr>
     </thead>
     <tbody>
-{!isloading && empresas?(
+{isloading?(<Loader/>):(
   empresas.map((empresa:Empresa)=>(
 
     <tr key={empresa.id}>
@@ -45,7 +46,7 @@ import { useNavigate } from 'react-router-dom';
    
   </tr>
   ))
-):(<></>)}
+)}
      
      
     </tbody>

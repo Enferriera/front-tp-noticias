@@ -14,7 +14,7 @@
           "id": 1,
           "tituloNoticia": "Innovación en IA",
           "resumenNoticia": "Presentamos nuestro nuevo asistente de IA.",
-          "imagenNoticia": "ia_innovacion.jpg",
+          "imagenNoticia": "./src/utils/image/page1-slide1.jpg",
           "contenidoHTML": "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
           "publicada": "Sí",
           "fechaPublicacion": "2024-03-16"

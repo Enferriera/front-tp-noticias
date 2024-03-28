@@ -56,7 +56,7 @@ useEffect(()=>{
 },[])
   return (
 <>
-{!isloading&&empresa?(
+{isloading?(<Loader/>):(
   <>
    <Header denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
 <main>        
@@ -101,7 +101,7 @@ useEffect(()=>{
 </main>
 <Footer denominacion={empresa.denominacion} latitud={empresa.latitud} longitud={empresa.longitud} />
 </>
-):(<></>)}
+)}
     </>
   )
 }
