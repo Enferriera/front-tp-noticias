@@ -1,61 +1,85 @@
 
-
+import { useEffect, useState } from "react";
+import { Empresa } from "../types/Empresa";
+import { Noticia } from "../types/Noticia";
+import { useParams, useNavigate} from "react-router-dom";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
+import { Carousel } from "react-bootstrap";
 
 const Home=()=> {
+  const navigate=useNavigate();
+  const {id}=useParams();
+const [empresa,setEmpresa]=useState<Empresa>();
+const [isloading,setIsloading]=useState(true);
+
+useEffect(()=>{
+
+  const empresaMano:Empresa={
+    id: 1,
+    denominacion: "Tecnologías Innovar",
+    telefono: "+54 11 2345-6789",
+    horarioDeAtencion: "Lunes a Viernes de 8 a 17 hs",
+    quienesSomos: "Somos líderes en soluciones tecnológicas innovadoras.",
+    latitud: -34.603722,
+    longitud: -58.381592,
+    domicilio: "Av. Siempre Viva 742, Buenos Aires",
+    email: "info@innovartech.com",
+    listaNoticias: [
+      {
+        id: 1,
+        tituloNoticia: "Innovación en IA",
+        resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
+        imagenNoticia: "/src/assets/image/page-1_slide2.jpg",
+        contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
+        publicada: "Sí",
+        fechaPublicacion: "2024-03-16"
+      },
+      {
+        id: 2,
+        tituloNoticia: "Expansión Global",
+        resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
+        imagenNoticia: "/src/assets/image/page-1_slide1.jpg",
+        contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
+        publicada: "Sí",
+        fechaPublicacion: "2024-03-17"
+      }
+     
+    ]
+  }
+    console.log(empresaMano);
+
+    setEmpresa(empresaMano);
+    setIsloading(false);
+  
+
+},[])
   return (
 <>
+{isloading?(<Loader/>):(
+  <>
+   <Header denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
 <main>        
 
 <section className="well well1 well1_ins1">
-  <div className="camera_container">
-    <div id="camera" className="camera_wrap">
-      <div data-src="images/page-1_slide1.jpg">
-        <div className="camera_caption fadeIn">
-          <div className="jumbotron jumbotron1">
-            <em>
-              <a href="detalle.html">Titulo Noticia</a>
-            </em>
-            <div className="wrap">
-              <p>
-                Resumen
-              </p>
-              <a href="detalle.html" className="btn-link fa-angle-right"></a>
-            </div>  
-          </div>
-        </div>
-      </div>
-      <div data-src="images/page-1_slide2.jpg">
-        <div className="camera_caption fadeIn">
-          <div className="jumbotron jumbotron2">
-            <em>
-              Titulo Noticia
-            </em>
-            <div className="wrap">
-              <p>
-                Resumen
-              </p>
-              <a href="#" className="btn-link hov_prime fa-angle-right"></a>
-            </div>  
-          </div>
-        </div>
-      </div>
-      <div data-src="images/page-1_slide3.jpg">
-        <div className="camera_caption fadeIn">
-          <div className="jumbotron">
-            <em>
-              Titulo Noticia
-            </em>
-            <div className="wrap">
-              <p>
-                Resumen
-              </p>
-              <a href="#" className="btn-link fa-angle-right"></a>
-            </div>  
-          </div>
-        </div>
-      </div>
+<Carousel>
+{empresa.listaNoticias.map((noticia:Noticia)=>(
+      <Carousel.Item key={noticia.id}>
+    <div className="w-100 bg-dark h-100">
+     
+      <img src={noticia.imagenNoticia}/>
     </div>
-  </div>
+      
+        <Carousel.Caption onClick={()=>navigate(`/detalle/${noticia.id}`)} className="d-flex justify-content-center" >
+          <div className="bg-primary w-50">
+          <a className="text-black fw-b" onClick={()=>navigate(`/detalle/${noticia.id}`)}>{noticia.tituloNoticia}</a>
+          <p className="text-black fw-b">{noticia.resumenNoticia}</p>
+          </div>
+       
+        </Carousel.Caption>
+      </Carousel.Item>
+       ) )}
+      </Carousel> 
 
 </section>
 
@@ -67,15 +91,17 @@ const Home=()=> {
     <div className="row">
       <div className="col">
         <p style={{textAlign:"justify"}}>
-          Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </p>
+         {empresa.quienesSomos}
+          </p>
       </div>
     </div>
   </div>
 </section>
 
 </main>
-
+<Footer denominacion={empresa.denominacion} latitud={empresa.latitud} longitud={empresa.longitud} />
+</>
+)}
     </>
   )
 }
