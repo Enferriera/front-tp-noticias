@@ -14,7 +14,7 @@ import Error from "../pages/Error";
     <Routes>
         <Route path="/" element={<IndexPage/>}/>
         <Route path="/home/:id" element={<Home/>}/>
-        <Route path="/detalle" element={<Detalle/>}/>
+        <Route path="/detalle/:id" element={<Detalle/>}/>
         <Route path="/buscador" element={<Buscador/>}/>
         <Route path="/tiny" element={<Tiny/>}/>
         <Route path="/*" element={<Error/>}/>
