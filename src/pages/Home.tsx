@@ -6,6 +6,7 @@ import { useParams, useNavigate} from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import { Carousel } from "react-bootstrap";
+import Loader from "../components/Loader/Loader";
 
 const Home=()=> {
   const navigate=useNavigate();

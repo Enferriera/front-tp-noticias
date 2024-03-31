@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import Detalle from "../pages/Detalle";
 import Buscador from "../pages/Buscador";
 import Tiny from "../pages/Tiny";
+import Error from "../pages/Error";
 
 
 
@@ -16,6 +17,7 @@ import Tiny from "../pages/Tiny";
         <Route path="/detalle" element={<Detalle/>}/>
         <Route path="/buscador" element={<Buscador/>}/>
         <Route path="/tiny" element={<Tiny/>}/>
+        <Route path="/*" element={<Error/>}/>
         
 
     </Routes>
