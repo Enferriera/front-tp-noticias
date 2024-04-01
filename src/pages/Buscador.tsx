@@ -101,6 +101,10 @@ const noticiaEncontrada=empresaMano.listaNoticias;
                          {noticia.resumenNoticia}<a onClick={()=>navigate(`/detalle/${noticia.id}`)} style={{color:'blue'}}> Leer Mas - 2020-02-14</a>
                        </div>
                      </td>
+                     <td>
+                      <div className="d-flex gap-2"><button className="btn btn-warning btn-sm text-black" >Eitar Noticia</button>
+                      <button className="btn btn-danger btn-sm text-black" >Eliminar Noticia</button></div>
+                     </td>
                    </tr>
                   ))}
                  
