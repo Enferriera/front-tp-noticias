@@ -101,8 +101,9 @@ useEffect(()=>{
        {noticia?.resumenNoticia}
               </dt>
       <hr />
-              <dd>
-        {noticia?.contenidoHTML}
+              <dd dangerouslySetInnerHTML={{ __html:noticia?.contenidoHTML}}>
+               
+        
       </dd>
             </dl>
           </div>
@@ -112,7 +113,7 @@ useEffect(()=>{
     
 
   </main>
-  <Footer denominacion={empresa.denominacion} latitud={0} longitud={0} />
+  <Footer denominacion={empresa.denominacion}   />
   </>
   )}
   </>)

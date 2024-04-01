@@ -1,7 +1,68 @@
+import { useState,useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Empresa } from "../types/Empresa";
+import { Noticia } from "../types/Noticia";
+import Footer from "../components/Footer/Footer";
+import Header from "../components/Header/Header";
+import Loader from "../components/Loader/Loader";
 
 const Buscador=()=> {
+const navigate=useNavigate();
+  const {id}=useParams();
+const [empresa,setEmpresa]=useState<Empresa>();
+const [isloading,setIsloading]=useState(true);
+const [noticias,setNoticias]=useState<Noticia[]>([]);
+
+
+useEffect(()=>{
+const empresaMano:Empresa={
+  id: 1,
+  denominacion: "Tecnologías Innovar",
+  telefono: "+54 11 2345-6789",
+  horarioDeAtencion: "Lunes a Viernes de 8 a 17 hs",
+  quienesSomos: "Somos líderes en soluciones tecnológicas innovadoras.",
+  latitud: -34.603722,
+  longitud: -58.381592,
+  domicilio: "Av. Siempre Viva 742, Buenos Aires",
+  email: "info@innovartech.com",
+  listaNoticias: [
+    {
+      id: 1,
+      tituloNoticia: "Innovación en IA",
+      resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
+      imagenNoticia: "/src/assets/image/page-1_slide2.jpg",
+      contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
+      publicada: "Sí",
+      fechaPublicacion: "2024-03-16"
+    },
+    {
+      id: 2,
+      tituloNoticia: "Expansión Global",
+      resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
+      imagenNoticia: "/src/assets/image/page-1_slide1.jpg",
+      contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
+      publicada: "Sí",
+      fechaPublicacion: "2024-03-17"
+    }
+   
+  ]
+}
+
+const noticiaEncontrada=empresaMano.listaNoticias;
+  
+
+  setEmpresa(empresaMano);
+  setNoticias(noticiaEncontrada);
+  setIsloading(false);
+
+
+},[])
   return (
     <>
+    {isloading?(<Loader/>):(
+      <>
+     <Header denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
+    
       <main>
 
         <section className="well well4">
@@ -13,23 +74,26 @@ const Buscador=()=> {
             </h2>
             <div className="row offs2">
 
-              <table width="90%" align="center">
-                <tbody>
-                  <tr>
-                    <td>
-                      <a href="detalle.html">
-                        <img width="250px" className="imgNoticia" src="http://localhost:82/template_html/images/page-1_slide1.jpg?1583775512626" alt="" />
-                      </a>
-                    </td>
-                    <td width="25"></td>
-                    <td style={{textAlign:'justify'}} valign="top">
-                      <a style={{textAlign:'justify', fontSize:'20px'}} href="detalle.html" className="banner">
-                        Titulo									</a>
-                      <div className="verOcultar">
-                        Resumen de la Noticia<a href="detalle.html" style={{color:'blue'}}> Leer Mas - 2020-02-14</a>
-                      </div>
-                    </td>
-                  </tr>
+              <table className="table" width="90%" align="center">
+                <tbody >
+                  {noticias.map(noticia=>(
+                     <tr>
+                     <td>
+                       <a onClick={()=>navigate(`/detalle/${noticia.id}`)}>
+                         <img width="250px" className="imgNoticia" src={noticia.imagenNoticia} alt={noticia.tituloNoticia} />
+                       </a>
+                     </td>
+                     <td width="25"></td>
+                     <td style={{textAlign:'justify'}} valign="top">
+                       <a style={{textAlign:'justify', fontSize:'20px'}} onClick={()=>navigate(`/detalle/${noticia.id}`)} className="banner">
+                        {noticia.tituloNoticia}								</a>
+                       <div className="verOcultar">
+                         {noticia.resumenNoticia}<a onClick={()=>navigate(`/detalle/${noticia.id}`)} style={{color:'blue'}}> Leer Mas - 2020-02-14</a>
+                       </div>
+                     </td>
+                   </tr>
+                  ))}
+                 
                 </tbody>
               </table>
               <hr />
@@ -39,8 +103,10 @@ const Buscador=()=> {
 
 
       </main>
-    </>
-  )
+      <Footer denominacion={empresa.denominacion}   />
+  </>
+  )}
+  </>)
 }
 
 export default Buscador;
