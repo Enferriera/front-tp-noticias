@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Empresa } from "../types/Empresa";
 import { Noticia } from "../types/Noticia";
 import Footer from "../components/Footer/Footer";
@@ -8,12 +8,22 @@ import Loader from "../components/Loader/Loader";
 
 const Buscador=()=> {
 const navigate=useNavigate();
-  const {id}=useParams();
+const location = useLocation();
 const [empresa,setEmpresa]=useState<Empresa>();
 const [isloading,setIsloading]=useState(true);
 const [noticias,setNoticias]=useState<Noticia[]>([]);
+const [buscar,setBuscar]=useState<string>('');
+const [idEmpresa,setIdEmpresa]=useState<number>();
 
+useEffect(() => {
+  const searchParams = new URLSearchParams(location.search);
+  const buscar = searchParams.get('buscar');
+  const empresaId=searchParams.get('empresaId');
 
+  setBuscar(buscar);
+  setIdEmpresa(Number(empresaId));
+ 
+},[])
 useEffect(()=>{
 const empresaMano:Empresa={
   id: 1,
@@ -61,7 +71,7 @@ const noticiaEncontrada=empresaMano.listaNoticias;
     <>
     {isloading?(<Loader/>):(
       <>
-     <Header denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
+     <Header palabraBuscar={buscar} idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
     
       <main>
 

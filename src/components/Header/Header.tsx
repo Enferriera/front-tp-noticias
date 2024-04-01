@@ -1,14 +1,31 @@
+import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+
+const validationSchema=Yup.object({
+  buscar:Yup.string()
+})
 
 type HeaderProps={
+  idEmpresa:number,
   denominacion:string,
   telefono:string,
   horaDeAtencion:string,
+  palabraBuscar:string
 
 }
 
 
-const Header = ({denominacion,telefono,horaDeAtencion}:HeaderProps) => {
+const Header = ({idEmpresa,denominacion,telefono,horaDeAtencion, palabraBuscar=''}:HeaderProps) => {
+  const formik=useFormik({
+    initialValues:{
+      buscar:palabraBuscar
+    },
+    validationSchema:validationSchema,
+    onSubmit:(values)=>{
+     navigate(`/buscador?buscar=${values.buscar}&empresaId=${idEmpresa}`)
+    }
+  })
   const navigate=useNavigate();
     return (
        
@@ -42,9 +59,10 @@ const Header = ({denominacion,telefono,horaDeAtencion}:HeaderProps) => {
                     </ul>                           
                   </div>
               </nav>
-              <form className="search-form" action="buscador.html" method="GET" >
-                <label className="search-form_label">
-                  <input className="search-form_input" type="text" name="buscar"  placeholder="Ingrese Texto"/>
+              <form className="search-form" onSubmit={formik.handleSubmit} method="GET" >
+                <label className="search-form_label" htmlFor="buscar">
+                  <input className="search-form_input" type="text" id="buscar" name="buscar" value={formik.values.buscar} onChange={formik.handleChange}  placeholder="Ingrese Texto"/>
+                  {formik.touched.buscar && formik.errors.buscar?(<div className="text-danger">{formik.errors.buscar}</div>):null}
                   <span className="search-form_liveout"></span>
                 </label>
                 <button className="search-form_submit fa-search" type="submit"></button>
