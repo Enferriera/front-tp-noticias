@@ -1,4 +1,6 @@
 import { Empresa } from "../types/Empresa.ts";
+import { EmpresaIndex } from "../types/EmpresaIndex.ts";
+
 
 const BASE_URL="http://localhost:8080/api";
 
@@ -15,12 +17,13 @@ export const EmpresaService={
         return data;
     },
     createEmpresa:async (empresa:Empresa):Promise<Empresa>=>{
+        const { id, ...empresaSinId } = empresa;
         const response=await fetch(`${BASE_URL}/empresas`,{
             method:"POST",
             headers:{
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify(empresa)
+            body:JSON.stringify(empresaSinId)
         });
         const data=await response.json();
         return data;
@@ -42,6 +45,11 @@ export const EmpresaService={
             method:"DELETE"
            
         });
+        const data=await response.json();
+        return data;
+    },
+    getEmpresasIndex:async ():Promise<EmpresaIndex[]>=>{
+        const response=await fetch(`${BASE_URL}/empresas/listaIndex`);
         const data=await response.json();
         return data;
     }

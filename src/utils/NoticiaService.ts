@@ -44,6 +44,11 @@ export const NoticiaService={
         });
         const data=await response.json();
         return data;
+    },
+    getHomeNoticias:async (id:number):Promise<Noticia[]>=>{
+        const response=await fetch(`${BASE_URL}/noticias/ultimasNoticias/${id}`);
+        const data=response.json();
+        return data;
     }
 
 }

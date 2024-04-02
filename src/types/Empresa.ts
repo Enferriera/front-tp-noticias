@@ -5,12 +5,12 @@ export interface Empresa{
 id:number;
 denominacion:string;
 telefono:string;
-horarioDeAtencion:string;
-quienesSomos:string;
+horario_de_atencion:string;
+quienes_somos:string;
 latitud:number;
 longitud:number;
 domicilio:string; 
 email:string; 
-listaNoticias: Noticia[];
+noticias: Noticia[];
     
 }
