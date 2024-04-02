@@ -5,6 +5,7 @@ import Detalle from "../pages/Detalle";
 import Buscador from "../pages/Buscador";
 import Tiny from "../pages/Tiny";
 import Error from "../pages/Error";
+import FormEmpresa from "../pages/FormEmpresa";
 
 
 
@@ -17,6 +18,7 @@ import Error from "../pages/Error";
         <Route path="/detalle/:id" element={<Detalle/>}/>
         <Route path="/buscador" element={<Buscador/>}/>
         <Route path="/tiny" element={<Tiny/>}/>
+        <Route path="/empresaform" element={<FormEmpresa/>}/>
         <Route path="/*" element={<Error/>}/>
         
 
