@@ -49,6 +49,11 @@ export const NoticiaService={
         const response=await fetch(`${BASE_URL}/noticias/ultimasNoticias/${id}`);
         const data=response.json();
         return data;
+    },
+    getNoticiasSearchByPalabra:async(id:number,palabras:string):Promise<Noticia[]>=>{
+        const response=await fetch(`${BASE_URL}/noticias/search?id=${id}&&palabras=${palabras}`);
+        const data=response.json();
+        return data;
     }
 
 }

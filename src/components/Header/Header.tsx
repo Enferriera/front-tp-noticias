@@ -23,7 +23,8 @@ const Header = ({idEmpresa,denominacion,telefono,horaDeAtencion, palabraBuscar='
     },
     validationSchema:validationSchema,
     onSubmit:(values)=>{
-     navigate(`/buscador?buscar=${values.buscar}&empresaId=${idEmpresa}`)
+      
+     navigate(`/buscador?id=${idEmpresa}&palabras=${values.buscar}`)
     }
   })
   const navigate=useNavigate();
