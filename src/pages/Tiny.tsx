@@ -4,7 +4,7 @@ import Footer from '../components/Footer/Footer';
 import Header from '../components/Header/Header';
 import Loader from '../components/Loader/Loader';
 import { Empresa } from '../types/Empresa';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Noticia } from '../types/Noticia';
@@ -22,7 +22,8 @@ const validationSchema = Yup.object({
 
 const Tiny = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const location = useLocation();
+  const [idNoticia, setIdNoticia] = useState<string>('');
   const [empresa, setEmpresa] = useState<Empresa>();
   const[noticia,setNoticia]=useState<Noticia>();
   const [isloading, setIsloading] = useState(true);
@@ -38,20 +39,45 @@ const Tiny = () => {
   const formik = useFormik({
     initialValues: {
       id: null,
-      tituloNoticia: id!=null?noticia?.tituloNoticia:'',
-      resumenNoticia:id!=null?noticia?.resumenNoticia: '',
-      imagenNoticia: id!=null?noticia?.imagenNoticia:'',
-      contenidoHTML: id!=null?noticia?.contenidoHTML:'',
-      publicada:id!=null?noticia?.publicada:'',
-      fechaPublicacion:id!=null?noticia?.fechaPublicacion:''
+      tituloNoticia: idNoticia!=''?noticia?.tituloNoticia:'',
+      resumenNoticia:idNoticia!=''?noticia?.resumenNoticia: '',
+      imagenNoticia: idNoticia!=''?noticia?.imagenNoticia:'',
+      contenidoHTML: idNoticia!=''?noticia?.contenidoHTML:'',
+      publicada:idNoticia!=''?noticia?.publicada:'',
+      fechaPublicacion:idNoticia!=''?noticia?.fechaPublicacion:''
       
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      navigate(`/buscador`)
+    onSubmit: async (values) => {
+      try{
+        const response = await fetch('uri de la api',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+        if(response.ok){
+          navigate('/buscador')
+
+        }else{
+          throw new Error('Error al enviar datos')
+        }
+      } catch (error){
+        console.error('Errror: '+error)
+      }
+      
+      //console.log(JSON.stringify(values))
+
     }
   })
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const id: string = searchParams.get('id') != null ? searchParams.get('id') : '';
+    setIdNoticia(id);
+    id == '' ? setIsloading(false) : null;
+  }, [])
   useEffect(() => {
 
     const empresaMano: Empresa = {
@@ -96,6 +122,18 @@ const Tiny = () => {
 
 
   }, [])
+
+  const [content, setContent] = useState('');
+  const handleEditorChange = (content, editor) => {
+    setContent(content);
+    formik.setFieldValue('contenidoHTML', content);
+  };
+
+  const handleSendContent = () => {
+    console.log(formik.values.contenidoHTML)
+    
+  };
+
   return (
     <>
       {isloading ? (<Loader />) : (
@@ -149,22 +187,27 @@ const Tiny = () => {
                     </select>
                   </label>
                   <Editor
-                    apiKey='ypxoh9xdlqcje7t1acradvy3x44k8kmvj1v1892jbct36xwa'
+                    apiKey="ypxoh9xdlqcje7t1acradvy3x44k8kmvj1v1892jbct36xwa"
+                    initialValue="<p>Escribe aquí...</p>"
                     init={{
-                      plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
-                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                      tinycomments_mode: 'embedded',
-                      tinycomments_author: 'Author name',
-                      mergetags_list: [
-                        { value: 'First.Name', title: 'First Name' },
-                        { value: 'Email', title: 'Email' },
+                      height: 500,
+                      menubar: true,
+                      plugins: [
+                        'advlist autolink lists link image charmap print preview anchor',
+                        'searchreplace visualblocks code fullscreen',
+                        'insertdatetime media table paste code help wordcount'
                       ],
-                      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+                      toolbar:
+                        'undo redo | formatselect | ' +
+                        'bold italic backcolor | alignleft aligncenter ' +
+                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                        'removeformat | help',
+                      content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                     }}
-                    initialValue={id != null ? formik.values.contenidoHTML : "Welcome to TinyMCE!"}
+                    onEditorChange={handleEditorChange}
                   />
-                  <button onClick={() => log}>Enviar</button>
-                  <button className="btn btn-primary btn-sm" type="submit">{id != null ? "Editar" : "Agregar"}</button>
+                  <button onClick={handleSendContent}>Ver HTML</button>
+                  <button className={idNoticia != '' ? "btn w-50 btn-warning btn-sm" : "btn w-50 btn-success text-black btn-sm"} type="submit">{idNoticia != '' ? "Editar" : "Agregar"}</button>
 
                 </form>
 
