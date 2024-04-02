@@ -6,4 +6,5 @@ imagenNoticia:string;
 contenidoHTML:string 
 publicada:string;
 fechaPublicacion:string
+empresaId:number;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
-import { Empresa } from '../types/Empresa';
+import { EmpresaIndex } from '../types/EmpresaIndex';
 import { EmpresaService } from '../utils/EmpresaService';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader/Loader';
@@ -8,17 +8,17 @@ import Loader from '../components/Loader/Loader';
  const IndexPage= ()=> {
 
   const navigate=useNavigate();
-  const [empresas,setEmpresas]=useState<Empresa[]>([]);
+  const [empresas,setEmpresas]=useState<EmpresaIndex[]>([]);
   const [isloading,setIsloading]=useState(true);
 
   useEffect(()=>{
 
     const fetchEmpresas= async()=>{
-      //const empresa=await EmpresaService.getAllEmpresas() ;
-      const empresa=await fetch('src/utils/ejemplo.json');
-      const data= await empresa.json();
-    setEmpresas(data);
+      const empresa=await EmpresaService.getEmpresasIndex() ;
+     
+    setEmpresas(empresa);
     setIsloading(false);
+    console.log(empresa);
       
     }
 
@@ -40,7 +40,7 @@ import Loader from '../components/Loader/Loader';
     </thead>
     <tbody>
 {isloading?(<Loader/>):(
-  empresas.map((empresa:Empresa)=>(
+  empresas.map((empresa:EmpresaIndex)=>(
 
     <tr key={empresa.id}>
     <td>{empresa.denominacion}</td>
