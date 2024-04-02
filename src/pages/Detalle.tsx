@@ -5,6 +5,8 @@ import Header from "../components/Header/Header";
 import Loader from "../components/Loader/Loader";
 import { Noticia } from "../types/Noticia";
 import Footer from "../components/Footer/Footer";
+import { NoticiaService } from "../utils/NoticiaService";
+import { EmpresaService } from "../utils/EmpresaService";
 
 
 const Detalle=()=> {
@@ -16,51 +18,19 @@ const [noticia,setNoticia]=useState<Noticia>();
 
 useEffect(()=>{
 
-  const empresaMano:Empresa={
-    id: 1,
-    denominacion: "Tecnologías Innovar",
-    telefono: "+54 11 2345-6789",
-    horarioDeAtencion: "Lunes a Viernes de 8 a 17 hs",
-    quienesSomos: "Somos líderes en soluciones tecnológicas innovadoras.",
-    latitud: -34.603722,
-    longitud: -58.381592,
-    domicilio: "Av. Siempre Viva 742, Buenos Aires",
-    email: "info@innovartech.com",
-    listaNoticias: [
-      {
-        id: 1,
-        tituloNoticia: "Innovación en IA",
-        resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
-        imagenNoticia: "/src/assets/image/page-1_slide2.jpg",
-        contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
-        publicada: "Sí",
-        fechaPublicacion: "2024-03-16"
-      },
-      {
-        id: 2,
-        tituloNoticia: "Expansión Global",
-        resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
-        imagenNoticia: "/src/assets/image/page-1_slide1.jpg",
-        contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
-        publicada: "Sí",
-        fechaPublicacion: "2024-03-17"
-      }
-     
-    ]
-  }
-
- const noticiaEncontrada=empresaMano.listaNoticias.find((noticia:Noticia):boolean=>noticia.id==Number(id));
-    
-
-    setEmpresa(empresaMano);
-    setNoticia(noticiaEncontrada)
-    setIsloading(false);
-  
-
+ const detalleNoticia=async()=>{
+  const detalle=await NoticiaService.getOneNoticia(Number(id));
+  setNoticia(detalle);
+  const empresaNoticia= await EmpresaService.getOneEmpresa(detalle.idEmpresa);
+  setEmpresa(empresaNoticia)
+  setIsloading(false);
+ }
+ detalleNoticia();
+   
 },[])
   const imagenPrincipalStyle = {
       height: '450px',
-      backgroundImage: `url(${noticia?noticia.imagenNoticia:""})`,
+      backgroundImage: `url(${noticia?noticia.imagen:""})`,
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'cover',
   };
@@ -75,7 +45,7 @@ useEffect(()=>{
     <>
     {isloading?(<Loader/>):(
       <>
-     <Header idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
+     <Header idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horario_de_atencion} />
     <main>        
 
     <section className="well well4">
@@ -84,21 +54,21 @@ useEffect(()=>{
     <center>
       <div id="imagenPrincipal" style={imagenPrincipalStyle}>
         <div style={tituloNoticiaStyle}>
-         {noticia?.tituloNoticia}                        
+         {noticia?.titulo}                        
         </div>
       </div>
     </center>
     <h2>
-          {noticia?.tituloNoticia}
+          {noticia?.titulo}
         </h2>
-    Fecha Publicacion: {noticia?.fechaPublicacion}
+    Fecha Publicacion: {noticia?.fecha.toLocaleString()}
     <hr />
         <div className="row offs2">
           
           <div className="col-lg-12">
             <dl className="terms-list">
               <dt>
-       {noticia?.resumenNoticia}
+       {noticia?.resumen}
               </dt>
       <hr />
               <dd dangerouslySetInnerHTML={{ __html:noticia?.contenidoHTML}}>
