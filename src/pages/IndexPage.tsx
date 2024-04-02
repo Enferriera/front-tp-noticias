@@ -26,6 +26,8 @@ import Loader from '../components/Loader/Loader';
   
   },[])
   return (
+    <>
+    <div className='d-flex justify-content-center mt-4'><button className='btn  btn-success btn-sm text-black' onClick={()=>navigate('/empresaform/')}>Nueva Empresa</button></div>
     <div className='w-100 d-flex justify-content-center'>
     <Table className='w-75 mt-5' striped bordered hover>
     <thead>
@@ -52,6 +54,7 @@ import Loader from '../components/Loader/Loader';
     </tbody>
   </Table>
   </div>
+  </>
   )
 }
 

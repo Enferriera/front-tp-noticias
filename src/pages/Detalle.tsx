@@ -75,7 +75,7 @@ useEffect(()=>{
     <>
     {isloading?(<Loader/>):(
       <>
-     <Header denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
+     <Header idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
     <main>        
 
     <section className="well well4">
