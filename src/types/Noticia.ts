@@ -1,10 +1,10 @@
 export interface Noticia{
     id:number;  
-tituloNoticia:string; 
-resumenNoticia:string; 
-imagenNoticia:string;
+titulo:string; 
+resumen:string; 
+imagen:string;
 contenidoHTML:string 
 publicada:string;
-fechaPublicacion:string
-empresaId:number;
+fecha:Date
+idEmpresa:number;
 }
