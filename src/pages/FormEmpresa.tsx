@@ -74,25 +74,29 @@ const FormEmpresa = () => {
       const empresaGet = await EmpresaService.getOneEmpresa(Number(idConsulta));
 
       setEmpresa(empresaGet);
-      formik.setValues({
-        denominacion: empresaGet.denominacion,
-        telefono: empresaGet.telefono,
-        horario_de_atencion: empresaGet.horario_de_atencion,
-        quienes_somos: empresaGet.quienes_somos,
-        latitud: empresaGet.latitud,
-        longitud: empresaGet.longitud,
-        domicilio: empresaGet.domicilio,
-        email: empresaGet.email,
-      });
+     
       setIsloading(false);
-      console.log(empresaGet);
+      
 
     }
     idEmpresa != '' ? fetchEmpresa(idEmpresa) : null;
+  
   }, [idEmpresa])
 
 
-
+useEffect(()=>{
+  empresa?
+  formik.setValues({
+    denominacion: empresa.denominacion,
+    telefono: empresa.telefono,
+    horario_de_atencion: empresa.horario_de_atencion,
+    quienes_somos: empresa.quienes_somos,
+    latitud: empresa.latitud,
+    longitud: empresa.longitud,
+    domicilio: empresa.domicilio,
+    email: empresa.email,
+  }):null;
+},[empresa])
 
 
   return (

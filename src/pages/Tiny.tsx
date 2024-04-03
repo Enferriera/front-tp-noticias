@@ -4,18 +4,21 @@ import Footer from '../components/Footer/Footer';
 import Header from '../components/Header/Header';
 import Loader from '../components/Loader/Loader';
 import { Empresa } from '../types/Empresa';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Noticia } from '../types/Noticia';
+import { NoticiaService } from '../utils/NoticiaService';
+import { EmpresaService } from '../utils/EmpresaService';
+import { EmpresaIndex } from '../types/EmpresaIndex';
 
 const validationSchema = Yup.object({
 
-  tituloNoticia: Yup.string().required('Ingrese un titulo'),
-  resumenNoticia: Yup.string().required('Ingrese un resumen'),
-  imagenNoticia: Yup.string().url().required('Ingrese una url valida'),
-  contenidoHTML: Yup.string().required("Ingrese una noticia"),
-  fechaPublicacion: Yup.date().required("Elija una fecha"),
+  titulo: Yup.string().required('Ingrese un titulo'),
+  resumen: Yup.string().required('Ingrese un resumen'),
+  imagen: Yup.string().url().required('Ingrese una url valida'),
+  contenido_html: Yup.string().required("Ingrese una noticia"),
+  fecha: Yup.date().required("Elija una fecha"),
 
 })
 
@@ -25,8 +28,10 @@ const Tiny = () => {
   const location = useLocation();
   const [idNoticia, setIdNoticia] = useState<string>('');
   const [empresa, setEmpresa] = useState<Empresa>();
-  const[noticia,setNoticia]=useState<Noticia>();
+  const [empresaSelect, setEmpresaSelect] = useState<EmpresaIndex>();
+  const [noticia, setNoticia] = useState<Noticia>(null);
   const [isloading, setIsloading] = useState(true);
+  const [contenido, setContenido] = useState<string>('');
   const editorRef = useRef(null);
   const log = () => {
     alert("Hola")
@@ -39,156 +44,172 @@ const Tiny = () => {
   const formik = useFormik({
     initialValues: {
       id: null,
-      tituloNoticia: idNoticia!=''?noticia?.tituloNoticia:'',
-      resumenNoticia:idNoticia!=''?noticia?.resumenNoticia: '',
-      imagenNoticia: idNoticia!=''?noticia?.imagenNoticia:'',
-      contenidoHTML: idNoticia!=''?noticia?.contenidoHTML:'',
-      publicada:idNoticia!=''?noticia?.publicada:'',
-      fechaPublicacion:idNoticia!=''?noticia?.fechaPublicacion:''
-      
+      titulo: idNoticia != '' ? noticia?.titulo : '',
+      resumen: idNoticia != '' ? noticia?.resumen : '',
+      imagen: idNoticia != '' ? noticia?.imagen : '',
+      contenido_html: idNoticia != '' ? noticia?.contenido_html : '',
+      publicada: idNoticia != '' ? noticia?.publicada : '',
+      fecha: idNoticia != '' ? noticia?.fecha : Date.now(),
+      idEmpresa: idNoticia != '' ? noticia?.idEmpresa : '',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      try{
-        const response = await fetch('uri de la api',{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
-        if(response.ok){
-          navigate('/buscador')
 
-        }else{
-          throw new Error('Error al enviar datos')
-        }
-      } catch (error){
-        console.error('Errror: '+error)
+      handleContentHTML();
+
+      const noticiaLista: Noticia = {
+        id: idNoticia != '' ? Number(idNoticia) : 0,
+        titulo: values.titulo,
+        resumen: values.resumen,
+        imagen: values.imagen,
+        contenido_html: values.contenido_html,
+        publicada: values.publicada,
+        fecha: new Date(values.fecha),
+        idEmpresa: Number(values.idEmpresa)
       }
-      
-      //console.log(JSON.stringify(values))
-
+console.log(noticiaLista);
+      noticiaLista.id == 0 ? await NoticiaService.createNoticia(noticiaLista) : await NoticiaService.updateNoticia(noticiaLista.id, noticiaLista);
+      navigate('/');
     }
   })
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const id: string = searchParams.get('id') != null ? searchParams.get('id') : '';
-    setIdNoticia(id);
-    id == '' ? setIsloading(false) : null;
-  }, [])
+
+
+
+  const handleEditorChange = (content, editor) => {
+
+    setContenido(content);
+
+  };
+
+  const handleContentHTML = () => {
+    // console.log(formik.values)
+    formik.setFieldValue('contenido_html', contenido);
+
+  };
+
   useEffect(() => {
 
-    const empresaMano: Empresa = {
-      id: 1,
-      denominacion: "Tecnologías Innovar",
-      telefono: "+54 11 2345-6789",
-      horarioDeAtencion: "Lunes a Viernes de 8 a 17 hs",
-      quienesSomos: "Somos líderes en soluciones tecnológicas innovadoras.",
-      latitud: -34.603722,
-      longitud: -58.381592,
-      domicilio: "Av. Siempre Viva 742, Buenos Aires",
-      email: "info@innovartech.com",
-      listaNoticias: [
-        {
-          id: 1,
-          tituloNoticia: "Innovación en IA",
-          resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
-          imagenNoticia: "/src/assets/image/page-1_slide2.jpg",
-          contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
-          publicada: "Sí",
-          fechaPublicacion: "2024-03-16"
-        },
-        {
-          id: 2,
-          tituloNoticia: "Expansión Global",
-          resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
-          imagenNoticia: "/src/assets/image/page-1_slide1.jpg",
-          contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
-          publicada: "Sí",
-          fechaPublicacion: "2024-03-17"
-        }
+    const fetchEmpresas = async () => {
+      const empresaIndex = await EmpresaService.getEmpresasIndex();
+      const searchParams = new URLSearchParams(location.search);
+      const id: string = searchParams.get('id') != null ? searchParams.get('id') : '';
+      setIdNoticia(id);
 
-      ]
+
+
+      setEmpresaSelect(empresaIndex);
+      console.log(id == '' && empresaIndex != null)
+      id == '' && empresaIndex != null ? setIsloading(false) : null;
+
+
     }
 
-
-
-
-    setEmpresa(empresaMano);
-
-    setIsloading(false);
-
+    fetchEmpresas();
 
   }, [])
 
-  const [content, setContent] = useState('');
-  const handleEditorChange = (content, editor) => {
-    setContent(content);
-    formik.setFieldValue('contenidoHTML', content);
-  };
+  useEffect(() => {
 
-  const handleSendContent = () => {
-    console.log(formik.values.contenidoHTML)
-    
-  };
+    const noticiaEditar = async () => {
+      const noticiaEditar = await NoticiaService.getOneNoticia(idNoticia);
+      setNoticia(noticiaEditar);
+
+    }
+
+    idNoticia != '' ? (noticiaEditar()) : null;
+
+  }, [idNoticia])
+
+  useEffect(() => {
+    const empresaNoticia = async () => {
+      const empresaNoti = await EmpresaService.getOneEmpresa(noticia?.idEmpresa);
+      setEmpresa(empresaNoti)
+
+
+    }
+    noticia != null ? (
+      empresaNoticia()) : null;
+  }, [noticia])
+
+  useEffect(() => {
+
+    if (empresa != null) {
+      formik.setValues({
+        id: idNoticia != '' ? noticia?.id : null,
+        titulo: idNoticia != '' ? noticia?.titulo : '',
+        resumen: idNoticia != '' ? noticia?.resumen : '',
+        imagen: idNoticia != '' ? noticia?.imagen : '',
+        contenido_html: idNoticia != '' ? noticia?.contenido_html : '',
+        publicada: idNoticia != '' ? noticia?.publicada : 'N',
+        fecha: idNoticia != '' ? noticia?.fecha.split('T')[0] : Date.now(),
+        idEmpresa: idNoticia != '' ? noticia?.idEmpresa : empresaSelect[0]?.id
+      });
+
+      setIsloading(false)
+    }
+  }, [empresa])
 
   return (
     <>
       {isloading ? (<Loader />) : (
         <>
-          <Header idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
+          {empresa != null ? (<Header idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horario_de_atencion} />) : (<></>)}
           <main>
             <section className='d-flex justify-content-center my-3'>
               <div className='w-75'>
                 <form onSubmit={formik.handleSubmit} >
-                  <label className="w-100 mb-3" htmlFor="tituloNoticia">
+                  <label className="w-100 mb-3" htmlFor="titulo">
                     Titulo noticia:
-                    <input className="w-75 text-primary" type="text" id="tituloNoticia" name="tituloNoticia" value={formik.values.tituloNoticia} onChange={formik.handleChange} />
+                    <input className="w-75 text-primary" type="text" id="titulo" name="titulo" value={formik.values.titulo} onChange={formik.handleChange} />
 
-                    {formik.touched.tituloNoticia && formik.errors.tituloNoticia ? (<div className="text-danger">{formik.errors.tituloNoticia}</div>) : null}
+                    {formik.touched.titulo && formik.errors.titulo ? (<div className="text-danger">{formik.errors.titulo}</div>) : null}
 
                   </label>
 
-                  <label className="w-100 mb-3" htmlFor="resumenNoticia">
+                  <label className="w-100 mb-3" htmlFor="resumen">
                     Resumen noticia:
-                    <input className="w-75 text-primary" type="text" id="resumenNoticia" name="resumenNoticia" value={formik.values.resumenNoticia} onChange={formik.handleChange} />
-                    {formik.touched.resumenNoticia && formik.errors.resumenNoticia ? (<div className="text-danger">{formik.errors.resumenNoticia}</div>) : null}
+                    <input className="w-75 text-primary" type="text" id="resumen" name="resumen" value={formik.values.resumen} onChange={formik.handleChange} />
+                    {formik.touched.resumen && formik.errors.resumen ? (<div className="text-danger">{formik.errors.resumen}</div>) : null}
 
                   </label>
-                  <label className="w-100 mb-3" htmlFor="imagenNoticia">
+                  <label className="w-100 mb-3" htmlFor="imagen">
                     Imagen noticia:
-                    <input className="w-75 text-primary" type="url" id="imagenNoticia" name="imagenNoticia" value={formik.values.imagenNoticia} onChange={formik.handleChange} />
-                    {formik.touched.imagenNoticia && formik.errors.imagenNoticia ? (<div className="text-danger">{formik.errors.imagenNoticia}</div>) : null}
+                    <input className="w-75 text-primary" type="url" id="imagen" name="imagen" value={formik.values.imagen} onChange={formik.handleChange} />
+                    {formik.touched.imagen && formik.errors.imagen ? (<div className="text-danger">{formik.errors.imagen}</div>) : null}
 
                   </label>
-                  <label className="w-100 mb-3" htmlFor="fechaPublicacion">
+                  <label className="w-100 mb-3" htmlFor="fecha">
                     Fecha publicacion:
-                    <input className="w-50 text-primary" type="date" id="fechaPublicacion" name="fechaPublicacion" value={formik.values.fechaPublicacion} onChange={formik.handleChange} />
-                    {formik.touched.fechaPublicacion && formik.errors.fechaPublicacion ? (<div className="text-danger">{formik.errors.fechaPublicacion}</div>) : null}
+                    <input className="w-50 text-primary" type="date" id="fecha" name="fecha" value={formik.values.fecha} onChange={formik.handleChange} />
+                    {formik.touched.fecha && formik.errors.fecha ? (<div className="text-danger">{formik.errors.fecha}</div>) : null}
 
                   </label>
 
                   <label className="w-100 mb-3" htmlFor="publicada">
                     Publicada:
 
-                    <select className="w-25 text-primary" id='publicada' name="publicidad" value={formik.values.publicada} onChange={formik.handleChange}>
-                      <option value="Y">Y</option>
+                    <select className="w-25 text-primary" id='publicada' name="publicada" value={formik.values.publicada} onChange={formik.handleChange}>
+                      <option value="S">S</option>
                       <option value="N">N</option>
                     </select>
                   </label>
 
-                  <label className="w-100 mb-3" htmlFor="empresa">
+                  <label className="w-100 mb-3" htmlFor="idEmpresa">
                     Empresa:
-                    <select className="w-50 text-primary" id='empresa' name="empresa" onChange={formik.handleChange} >
-                      <option value="Y">Y</option>
-                      <option value="N">N</option>
+                    <select className="w-50 text-primary" id='idEmpresa' name="idEmpresa" value={formik.values.idEmpresa} onChange={formik.handleChange} >
+                      {empresaSelect!=null?(
+                        empresaSelect.map(empresaInd => (
+                        <>
+                          <option key={empresaInd.id} value={empresaInd.id}>{empresaInd.denominacion}</option>
+                        </>
+                      ))):(<></>)}
+
                     </select>
                   </label>
                   <Editor
                     apiKey="ypxoh9xdlqcje7t1acradvy3x44k8kmvj1v1892jbct36xwa"
-                    initialValue="<p>Escribe aquí...</p>"
+                    initialValue={idNoticia != '' ? formik.values.contenido_html : "<p>Escriba aqui</p>"}
                     init={{
                       height: 500,
                       menubar: true,
@@ -206,8 +227,8 @@ const Tiny = () => {
                     }}
                     onEditorChange={handleEditorChange}
                   />
-                  <button onClick={handleSendContent}>Ver HTML</button>
-                  <button className={idNoticia != '' ? "btn w-50 btn-warning btn-sm" : "btn w-50 btn-success text-black btn-sm"} type="submit">{idNoticia != '' ? "Editar" : "Agregar"}</button>
+                 
+                  <button type="submit" className={idNoticia != '' ? "mt-3 btn w-50 btn-warning btn-sm" : "mt-3 btn w-50 btn-success text-black btn-sm"} onClick={()=>formik.handleSubmit()}>{idNoticia != '' ? "Editar" : "Agregar"}</button>
 
                 </form>
 
@@ -215,7 +236,8 @@ const Tiny = () => {
               </div>
             </section>
           </main>
-          <Footer denominacion={empresa.denominacion} />
+          {empresa != null ? (<Footer denominacion={empresa.denominacion} />) : (<></>)}
+
         </>
       )}
     </>

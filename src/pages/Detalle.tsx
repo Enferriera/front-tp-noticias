@@ -71,7 +71,7 @@ useEffect(()=>{
        {noticia?.resumen}
               </dt>
       <hr />
-              <dd dangerouslySetInnerHTML={{ __html:noticia?.contenidoHTML}}>
+              <dd dangerouslySetInnerHTML={{ __html:noticia?.contenido_html}}>
                
         
       </dd>
