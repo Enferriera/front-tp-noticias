@@ -34,6 +34,13 @@ const Buscador = () => {
 
   }
 
+  const handleEliminarNoticia=async()=>{
+   const response= await NoticiaService.deleteNoticia(idNoticiaEliminar);
+    
+    setModalShow(false);
+   return response;
+  }
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const palabraBuscar = searchParams.get('palabras');
@@ -66,7 +73,9 @@ const Buscador = () => {
           <main>
 
             <section className="well well4">
-
+              <div className="w-100 d-flex justify-content-center">
+                <button className="btn btn-success " onClick={()=>navigate('/tiny')}>Nueva Noticia</button>
+              </div>
               <div className="container">
 
                 <h2>
@@ -107,12 +116,17 @@ const Buscador = () => {
               </div>
             </section>
 
-            <EliminarModal
-              show={modalShow}
-              onHide={() => setModalShow(false)}
-              idNoticia={idNoticiaEliminar}
-              titulo={tituloEliminar}
-            />
+
+            <div className={modalShow?"d-flex flex-column justify-content-between align-items-center rounded bg-dark ":"d-none flex-column justify-content-between align-items-center rounded bg-dark "} style={{width:'700px',height:'300px',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',zIndex:'1000',margin:'auto'}}>
+                       <div className="mt-4 text-white text-center"><h6>Esta seguro que quiere eliminar la noticia</h6>
+                       <h6>{tituloEliminar}</h6></div> 
+                        <div className="d-flex gap-3 mb-3 mx-4">
+                          <button className="btn btn-success text-black" onClick={()=>setModalShow(false)}>Cancelar</button>
+                          <button className="btn btn-danger text-black" onClick={()=>handleEliminarNoticia()}>Eliminar</button>
+                        </div>
+            </div>
+
+           
           </main>
           <Footer denominacion={empresa.denominacion} />
         </>

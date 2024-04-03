@@ -37,13 +37,14 @@ export const NoticiaService={
         return data;
     },
 
-    deleteEmpresa:async (id:number):Promise<void>=>{
+    deleteNoticia:async (id:number):Promise<void>=>{
         const response=await fetch(`${BASE_URL}/noticias/${id}`,{
             method:"DELETE"
            
         });
-        const data=await response.json();
-        return data;
+        
+       
+       
     },
     getHomeNoticias:async (id:number):Promise<Noticia[]>=>{
         const response=await fetch(`${BASE_URL}/noticias/ultimasNoticias/${id}`);

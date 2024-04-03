@@ -45,13 +45,13 @@ export const EmpresaService={
             method:"DELETE"
            
         });
-        const data=await response.json();
-        return data;
+      
     },
     getEmpresasIndex:async ():Promise<EmpresaIndex[]>=>{
         const response=await fetch(`${BASE_URL}/empresas/listaIndex`);
         const data=await response.json();
         return data;
     }
+
 
 }

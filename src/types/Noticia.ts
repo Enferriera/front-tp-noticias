@@ -5,6 +5,6 @@ export interface Noticia {
     imagen: string;
     contenido_html: string;
     publicada: string;
-    fecha: Date;
+    fecha: string;
     idEmpresa: number;
 }

@@ -11,6 +11,7 @@ import { Noticia } from '../types/Noticia';
 import { NoticiaService } from '../utils/NoticiaService';
 import { EmpresaService } from '../utils/EmpresaService';
 import { EmpresaIndex } from '../types/EmpresaIndex';
+import {format} from 'date-fns';
 
 const validationSchema = Yup.object({
 
@@ -18,7 +19,7 @@ const validationSchema = Yup.object({
   resumen: Yup.string().required('Ingrese un resumen'),
   imagen: Yup.string().url().required('Ingrese una url valida'),
   contenido_html: Yup.string().required("Ingrese una noticia"),
-  fecha: Yup.date().required("Elija una fecha"),
+  fecha: Yup.string().required("Elija una fecha"),
 
 })
 
@@ -27,7 +28,7 @@ const Tiny = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [idNoticia, setIdNoticia] = useState<string>('');
-  const [empresa, setEmpresa] = useState<Empresa>();
+  const [empresa, setEmpresa] = useState<Empresa>(null);
   const [empresaSelect, setEmpresaSelect] = useState<EmpresaIndex>();
   const [noticia, setNoticia] = useState<Noticia>(null);
   const [isloading, setIsloading] = useState(true);
@@ -49,8 +50,8 @@ const Tiny = () => {
       imagen: idNoticia != '' ? noticia?.imagen : '',
       contenido_html: idNoticia != '' ? noticia?.contenido_html : '',
       publicada: idNoticia != '' ? noticia?.publicada : '',
-      fecha: idNoticia != '' ? noticia?.fecha : Date.now(),
-      idEmpresa: idNoticia != '' ? noticia?.idEmpresa : '',
+      fecha: idNoticia != '' ? noticia?.fecha :  format(new Date(), 'yyyy-MM-dd'),
+      idEmpresa: idNoticia != '' ? noticia?.idEmpresa : ''
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -64,10 +65,10 @@ const Tiny = () => {
         imagen: values.imagen,
         contenido_html: values.contenido_html,
         publicada: values.publicada,
-        fecha: new Date(values.fecha),
+        fecha: values.fecha,
         idEmpresa: Number(values.idEmpresa)
       }
-console.log(noticiaLista);
+
       noticiaLista.id == 0 ? await NoticiaService.createNoticia(noticiaLista) : await NoticiaService.updateNoticia(noticiaLista.id, noticiaLista);
       navigate('/');
     }
@@ -78,13 +79,13 @@ console.log(noticiaLista);
 
   const handleEditorChange = (content, editor) => {
 
-    setContenido(content);
+    formik.setFieldValue('contenido_html', content);
 
   };
 
   const handleContentHTML = () => {
     // console.log(formik.values)
-    formik.setFieldValue('contenido_html', contenido);
+    
 
   };
 
@@ -99,13 +100,14 @@ console.log(noticiaLista);
 
 
       setEmpresaSelect(empresaIndex);
-      console.log(id == '' && empresaIndex != null)
       id == '' && empresaIndex != null ? setIsloading(false) : null;
+     
 
 
     }
 
     fetchEmpresas();
+   
 
   }, [])
 
@@ -142,13 +144,13 @@ console.log(noticiaLista);
         imagen: idNoticia != '' ? noticia?.imagen : '',
         contenido_html: idNoticia != '' ? noticia?.contenido_html : '',
         publicada: idNoticia != '' ? noticia?.publicada : 'N',
-        fecha: idNoticia != '' ? noticia?.fecha.split('T')[0] : Date.now(),
+        fecha: idNoticia != '' ? noticia?.fecha.split('T')[0] :  format(new Date(), 'yyyy-MM-dd'),
         idEmpresa: idNoticia != '' ? noticia?.idEmpresa : empresaSelect[0]?.id
       });
 
       setIsloading(false)
     }
-  }, [empresa])
+  }, [empresa,empresaSelect])
 
   return (
     <>
@@ -158,7 +160,11 @@ console.log(noticiaLista);
           <main>
             <section className='d-flex justify-content-center my-3'>
               <div className='w-75'>
-                <form onSubmit={formik.handleSubmit} >
+                <form  onSubmit={(e)=>{
+               e.preventDefault()
+                handleContentHTML();
+                console.log(formik.values);
+                formik.handleSubmit()}} method={idNoticia!=''?'put':'post'}>
                   <label className="w-100 mb-3" htmlFor="titulo">
                     Titulo noticia:
                     <input className="w-75 text-primary" type="text" id="titulo" name="titulo" value={formik.values.titulo} onChange={formik.handleChange} />
@@ -190,6 +196,7 @@ console.log(noticiaLista);
                     Publicada:
 
                     <select className="w-25 text-primary" id='publicada' name="publicada" value={formik.values.publicada} onChange={formik.handleChange}>
+                      <option>Elija una opcion</option>
                       <option value="S">S</option>
                       <option value="N">N</option>
                     </select>
@@ -198,6 +205,7 @@ console.log(noticiaLista);
                   <label className="w-100 mb-3" htmlFor="idEmpresa">
                     Empresa:
                     <select className="w-50 text-primary" id='idEmpresa' name="idEmpresa" value={formik.values.idEmpresa} onChange={formik.handleChange} >
+                     <option>Elija una empresa</option>
                       {empresaSelect!=null?(
                         empresaSelect.map(empresaInd => (
                         <>
@@ -228,7 +236,7 @@ console.log(noticiaLista);
                     onEditorChange={handleEditorChange}
                   />
                  
-                  <button type="submit" className={idNoticia != '' ? "mt-3 btn w-50 btn-warning btn-sm" : "mt-3 btn w-50 btn-success text-black btn-sm"} onClick={()=>formik.handleSubmit()}>{idNoticia != '' ? "Editar" : "Agregar"}</button>
+                  <button type="submit"  className={idNoticia != '' ? "mt-3 btn w-50 btn-warning btn-sm" : "mt-3 btn w-50 btn-success text-black btn-sm"}>{idNoticia != '' ? "Editar" : "Agregar"}</button>
 
                 </form>
 
