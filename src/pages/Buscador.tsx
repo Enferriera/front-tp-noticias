@@ -8,6 +8,8 @@ import Loader from "../components/Loader/Loader";
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
 import EliminarModal from "../components/EliminarModal/EliminarModal";
+import { EmpresaService } from "../utils/EmpresaService";
+import { NoticiaService } from "../utils/NoticiaService";
 
 const Buscador = () => {
   const navigate = useNavigate();
@@ -18,82 +20,62 @@ const Buscador = () => {
   const [buscar, setBuscar] = useState<string>('');
   const [idEmpresa, setIdEmpresa] = useState<number>(0);
   const [tituloEliminar, setTituloEliminar] = useState<string>('');
-const [idNoticiaEliminar,setIdNoticiaEliminar]=useState<number>(0);
-  const [modalShow, setModalShow] =useState(false);
+  const [idNoticiaEliminar, setIdNoticiaEliminar] = useState<number>(0);
+  const [modalShow, setModalShow] = useState(false);
 
-  const handleEliminar=(id:number,titulo:string)=>{
+  const handleEliminar = (id: number, titulo: string) => {
 
     console.log(id);
     console.log(titulo);
     console.log(true);
-setIdNoticiaEliminar(id);
-setTituloEliminar(titulo);
-setModalShow(true);
+    setIdNoticiaEliminar(id);
+    setTituloEliminar(titulo);
+    setModalShow(true);
 
+  }
+
+  const handleEliminarNoticia=async()=>{
+   const response= await NoticiaService.deleteNoticia(idNoticiaEliminar);
+    
+    setModalShow(false);
+   return response;
   }
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const buscar = searchParams.get('buscar');
-    const empresaId = searchParams.get('empresaId');
+    const palabraBuscar = searchParams.get('palabras');
+    const empresaId = searchParams.get('id');
 
-    setBuscar(buscar);
+    setBuscar(palabraBuscar);
     setIdEmpresa(Number(empresaId));
 
-  }, [])
-  useEffect(() => {
-    const empresaMano: Empresa = {
-      id: 1,
-      denominacion: "Tecnologías Innovar",
-      telefono: "+54 11 2345-6789",
-      horarioDeAtencion: "Lunes a Viernes de 8 a 17 hs",
-      quienesSomos: "Somos líderes en soluciones tecnológicas innovadoras.",
-      latitud: -34.603722,
-      longitud: -58.381592,
-      domicilio: "Av. Siempre Viva 742, Buenos Aires",
-      email: "info@innovartech.com",
-      listaNoticias: [
-        {
-          id: 1,
-          tituloNoticia: "Innovación en IA",
-          resumenNoticia: "Presentamos nuestro nuevo asistente de IA.",
-          imagenNoticia: "/src/assets/image/page-1_slide2.jpg",
-          contenidoHTML: "<p>Descubre cómo nuestra IA puede cambiar tu vida.</p>",
-          publicada: "Sí",
-          fechaPublicacion: "2024-03-16"
-        },
-        {
-          id: 2,
-          tituloNoticia: "Expansión Global",
-          resumenNoticia: "Anunciamos la apertura de nuevas oficinas internacionales.",
-          imagenNoticia: "/src/assets/image/page-1_slide1.jpg",
-          contenidoHTML: "<p>Conoce nuestras nuevas ubicaciones alrededor del mundo.</p>",
-          publicada: "Sí",
-          fechaPublicacion: "2024-03-17"
-        }
+    const getEmpresa = async () => {
+      const empresaBuscar = await EmpresaService.getOneEmpresa(Number(empresaId));
+      setEmpresa(empresaBuscar);
+      const listaNoticia=  palabraBuscar == "" ? empresaBuscar.noticias : await NoticiaService.getNoticiasSearchByPalabra(empresaId, palabraBuscar)
+       setNoticias(listaNoticia);
 
-      ]
+      setIsloading(false);
     }
 
-    const noticiaEncontrada = empresaMano.listaNoticias;
+
+    getEmpresa();
 
 
-    setEmpresa(empresaMano);
-    setNoticias(noticiaEncontrada);
-    setIsloading(false);
+  }, [location.search])
 
-
-  }, [])
   return (
     <>
       {isloading ? (<Loader />) : (
         <>
-          <Header palabraBuscar={buscar} idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horarioDeAtencion} />
-         
+          <Header palabraBuscar={buscar} idEmpresa={empresa.id} denominacion={empresa.denominacion} telefono={empresa.telefono} horaDeAtencion={empresa.horario_de_atencion} />
+
           <main>
 
             <section className="well well4">
-
+              <div className="w-100 d-flex justify-content-center">
+                <button className="btn btn-success " onClick={()=>navigate('/tiny')}>Nueva Noticia</button>
+              </div>
               <div className="container">
 
                 <h2>
@@ -107,21 +89,21 @@ setModalShow(true);
                         <tr key={noticia.id}>
                           <td>
                             <a onClick={() => navigate(`/detalle/${noticia.id}`)}>
-                              <img width="250px" className="imgNoticia" src={noticia.imagenNoticia} alt={noticia.tituloNoticia} />
+                              <img width="250px" className="imgNoticia" src={noticia.imagen} alt={noticia.titulo} />
                             </a>
                           </td>
                           <td width="25"></td>
                           <td style={{ textAlign: 'justify' }} valign="top">
                             <a style={{ textAlign: 'justify', fontSize: '20px' }} onClick={() => navigate(`/detalle/${noticia.id}`)} className="banner">
-                              {noticia.tituloNoticia}								</a>
+                              {noticia.titulo}								</a>
                             <div className="verOcultar">
-                              {noticia.resumenNoticia}<a onClick={() => navigate(`/detalle/${noticia.id}`)} style={{ color: 'blue' }}> Leer Mas - 2020-02-14</a>
+                              {noticia.resumen}<a onClick={() => navigate(`/detalle/${noticia.id}`)} style={{ color: 'blue' }}> Leer Mas - 2020-02-14</a>
                             </div>
                           </td>
                           <td>
-                            <div  className="d-flex gap-2">
+                            <div className="d-flex gap-2">
                               <button className="btn btn-warning btn-sm text-black" onClick={() => navigate(`/tiny?id=${noticia.id}`)} >Eitar Noticia</button>
-                              <button onClick={()=>handleEliminar(noticia.id,noticia.tituloNoticia)} className="btn btn-danger btn-sm text-black" >Eliminar Noticia</button>
+                              <button onClick={() => handleEliminar(noticia.id, noticia.titulo)} className="btn btn-danger btn-sm text-black" >Eliminar Noticia</button>
                             </div>
                           </td>
                         </tr>
@@ -134,12 +116,17 @@ setModalShow(true);
               </div>
             </section>
 
-            <EliminarModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        idNoticia={idNoticiaEliminar}
-        titulo={tituloEliminar}
-      />
+
+            <div className={modalShow?"d-flex flex-column justify-content-between align-items-center rounded bg-dark ":"d-none flex-column justify-content-between align-items-center rounded bg-dark "} style={{width:'700px',height:'300px',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',zIndex:'1000',margin:'auto'}}>
+                       <div className="mt-4 text-white text-center"><h6>Esta seguro que quiere eliminar la noticia</h6>
+                       <h6>{tituloEliminar}</h6></div> 
+                        <div className="d-flex gap-3 mb-3 mx-4">
+                          <button className="btn btn-success text-black" onClick={()=>setModalShow(false)}>Cancelar</button>
+                          <button className="btn btn-danger text-black" onClick={()=>handleEliminarNoticia()}>Eliminar</button>
+                        </div>
+            </div>
+
+           
           </main>
           <Footer denominacion={empresa.denominacion} />
         </>

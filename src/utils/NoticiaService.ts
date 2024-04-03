@@ -37,16 +37,22 @@ export const NoticiaService={
         return data;
     },
 
-    deleteEmpresa:async (id:number):Promise<void>=>{
+    deleteNoticia:async (id:number):Promise<void>=>{
         const response=await fetch(`${BASE_URL}/noticias/${id}`,{
             method:"DELETE"
            
         });
-        const data=await response.json();
-        return data;
+        
+       
+       
     },
     getHomeNoticias:async (id:number):Promise<Noticia[]>=>{
         const response=await fetch(`${BASE_URL}/noticias/ultimasNoticias/${id}`);
+        const data=response.json();
+        return data;
+    },
+    getNoticiasSearchByPalabra:async(id:number,palabras:string):Promise<Noticia[]>=>{
+        const response=await fetch(`${BASE_URL}/noticias/search?id=${id}&&palabras=${palabras}`);
         const data=response.json();
         return data;
     }
